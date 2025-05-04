@@ -39,7 +39,6 @@ interface Message {
 interface Policy {
   id: number;
   title: string;
-  category: string;
   uploadDate: string;
   status: "Active" | "Draft";
   questions: number;
@@ -50,7 +49,6 @@ const policiesData: Policy[] = [
   {
     id: 1,
     title: "Public Safety Guidelines",
-    category: "LSGO",
     uploadDate: "2023-04-15",
     status: "Active",
     questions: 12
@@ -58,7 +56,6 @@ const policiesData: Policy[] = [
   {
     id: 2,
     title: "Environmental Protection Policy",
-    category: "LSGO",
     uploadDate: "2023-05-01",
     status: "Active",
     questions: 8
@@ -66,7 +63,6 @@ const policiesData: Policy[] = [
   {
     id: 3,
     title: "Urban Development Framework",
-    category: "HO",
     uploadDate: "2023-05-10",
     status: "Draft",
     questions: 5
@@ -74,7 +70,6 @@ const policiesData: Policy[] = [
   {
     id: 4,
     title: "Community Engagement Standards",
-    category: "HO",
     uploadDate: "2023-04-22",
     status: "Active",
     questions: 9
@@ -108,9 +103,7 @@ const Ask = () => {
   const [selectedPolicy, setSelectedPolicy] = useState<number | null>(null);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [inputMode, setInputMode] = useState<"text" | "file">("text");
-  
-  // Filter policies based on selected category
-  const filteredPolicies = policiesData.filter(policy => policy.category === policyCategory);
+
   
   const handleSendMessage = () => {
     if ((!query.trim() && inputMode === "text") || (inputMode === "file" && !uploadedFile)) {
@@ -256,7 +249,7 @@ const Ask = () => {
               <div className="mt-4">
                 <h3 className="font-medium mb-2">Available Policies</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {filteredPolicies.map((policy) => (
+                  {policiesData.map((policy) => (
                     <div 
                       key={policy.id}
                       className={`border rounded-md p-3 cursor-pointer transition-colors ${
