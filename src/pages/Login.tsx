@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
@@ -14,31 +13,52 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
+  // useEffect(() => {
+  //   if (localStorage.getItem("access_token")) {
+  //     navigate("/dashboard", { replace: true });
+  //   }
+  // }, [navigate]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     
-    // Simulate authentication
     try {
-      // This would normally be an API call to authenticate
-      setTimeout(() => {
-        // Mock successful login
-        localStorage.setItem("isAuthenticated", "true");
-        localStorage.setItem("user", JSON.stringify({ name: "Margaret", email }));
+      const response = await fetch('http://127.0.0.1:8000/api/v1/api/v1/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'accept': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+      
+      if (response.ok && data.status_code === 200) {
+        // Store the access token and user data
+        localStorage.setItem("access_token", data.data.access_token);
+        localStorage.setItem("user", JSON.stringify(data.data.user));
         
         toast({
           title: "Login successful",
           description: "Welcome back to Policy AI Portal",
         });
         
-        navigate("/dashboard");
-      }, 1500);
+        // Use setTimeout to ensure the toast is shown before navigation
+
+        navigate("/dashboard", { replace: true });
+
+      } else {
+        throw new Error(data.message || 'Login failed');
+      }
     } catch (error) {
       toast({
         variant: "destructive",
         title: "Login failed",
-        description: "Please check your credentials and try again",
+        description: error instanceof Error ? error.message : "Please check your credentials and try again",
       });
+    } finally {
       setIsLoading(false);
     }
   };
