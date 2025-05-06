@@ -32,7 +32,7 @@ const Login = () => {
 
     try {
       const response = await fetch(
-        "https://f38c-2400-adc1-49e-3300-8191-ac5c-e12a-98ac.ngrok-free.app/api/v1/api/v1/auth/login",
+        "http://127.0.0.1:8000/api/v1/api/v1/auth/login",
         {
           method: "POST",
           headers: {

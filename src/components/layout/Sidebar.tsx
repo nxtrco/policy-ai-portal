@@ -45,13 +45,18 @@ const Sidebar = () => {
   const handleLogout = () => {
     localStorage.removeItem("isAuthenticated");
     localStorage.removeItem("user");
+    localStorage.removeItem("access_token")
     
     toast({
       title: "Logged out",
       description: "You have been successfully logged out",
+      variant: "destructive",
     });
-    
-    navigate("/login");
+    console.log("Navigating to login...");
+
+    setTimeout(() => {
+      navigate("/login", { replace: true });
+    }, 100);
   };
   
   return (

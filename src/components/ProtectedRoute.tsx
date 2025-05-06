@@ -18,7 +18,7 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
         navigate("/login");
       }
     })();
-  }, [window !== undefined]);
+  }, [navigate]);
 
   return <>{children}</>;
 };
