@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { 
   Card, 
@@ -20,6 +20,7 @@ import {
   FileQuestion,
   History,
   ChevronRight,
+  ChevronDown,
   Sparkles,
   Upload,
   X,
@@ -36,16 +37,15 @@ interface Message {
   timestamp: Date;
 }
 
+// Define policy interface based on API response
 interface Policy {
-  id: number;
-  title: string;
-  uploadDate: string;
-  status: "Active" | "Draft";
-  questions: number;
+  policy_id: string;
+  filename: string;
+  created_at: string;
 }
 
-// Mock policy data
-const policiesData: Policy[] = [
+// Mock policy data for fallback
+const policiesData = [
   {
     id: 1,
     title: "Public Safety Guidelines",
@@ -100,10 +100,59 @@ const Ask = () => {
   
   // State for policy selection
   const [policyCategory, setPolicyCategory] = useState<"LSGO" | "HO">("LSGO");
-  const [selectedPolicy, setSelectedPolicy] = useState<number | null>(null);
+  const [selectedPolicy, setSelectedPolicy] = useState<string | null>(null);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [inputMode, setInputMode] = useState<"text" | "file">("text");
-
+  
+  // State for API policies
+  const [policies, setPolicies] = useState<Policy[]>([]);
+  const [isLoadingPolicies, setIsLoadingPolicies] = useState(true);
+  const [showAllPolicies, setShowAllPolicies] = useState(false);
+  
+  // Fetch policies from API
+  useEffect(() => {
+    const fetchPolicies = async () => {
+      setIsLoadingPolicies(true);
+      
+      try {
+        const accessToken = localStorage.getItem("access_token");
+        
+        if (!accessToken) {
+          throw new Error("Authentication token not found");
+        }
+        
+        const response = await fetch(
+          "http://127.0.0.1:8000/api/v1/api/v1/complaints/policy-collection",
+          {
+            method: "GET",
+            headers: {
+              "accept": "application/json",
+              "Authorization": `Bearer ${accessToken}`
+            }
+          }
+        );
+        
+        const data = await response.json();
+        
+        if (!response.ok) {
+          throw new Error(data.message || "Failed to fetch policies");
+        }
+        
+        setPolicies(data.data || []);
+      } catch (error) {
+        console.error("Error fetching policies:", error);
+        toast({
+          variant: "destructive",
+          title: "Failed to load policies",
+          description: error instanceof Error ? error.message : "An unknown error occurred",
+        });
+      } finally {
+        setIsLoadingPolicies(false);
+      }
+    };
+    
+    fetchPolicies();
+  }, [toast]);
   
   const handleSendMessage = () => {
     if ((!query.trim() && inputMode === "text") || (inputMode === "file" && !uploadedFile)) {
@@ -146,10 +195,10 @@ const Ask = () => {
     
     // Simulate AI response
     setTimeout(() => {
-      const selectedPolicyData = policiesData.find(p => p.id === selectedPolicy);
+      const selectedPolicyData = policies.find(p => p.policy_id === selectedPolicy);
       const aiResponse: Message = {
         id: messages.length + 2,
-        content: generateAIResponse(inputMode === "text" ? query : `Document analysis for ${uploadedFile?.name}`, selectedPolicyData?.title || ""),
+        content: generateAIResponse(inputMode === "text" ? query : `Document analysis for ${uploadedFile?.name}`, selectedPolicyData?.filename || ""),
         sender: "ai",
         timestamp: new Date()
       };
@@ -190,7 +239,7 @@ const Ask = () => {
     }
   };
   
-  const selectPolicy = (policyId: number) => {
+  const selectPolicy = (policyId: string) => {
     setSelectedPolicy(policyId);
   };
   
@@ -211,6 +260,9 @@ const Ask = () => {
       return `Based on ${policyTitle}, I couldn't find specific information about that query. Would you like me to search for related topics or would you prefer to rephrase your question? You can also upload additional policy documents if you believe the information should be available but isn't in our current database.`;
     }
   };
+  
+  // Determine which policies to display based on showAllPolicies state
+  const displayedPolicies = showAllPolicies ? policies : policies.slice(0, 4);
   
   return (
     <DashboardLayout>
@@ -248,34 +300,51 @@ const Ask = () => {
               
               <div className="mt-4">
                 <h3 className="font-medium mb-2">Available Policies</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {policiesData.map((policy) => (
-                    <div 
-                      key={policy.id}
-                      className={`border rounded-md p-3 cursor-pointer transition-colors ${
-                        selectedPolicy === policy.id 
-                          ? 'border-teal-500 bg-teal-50' 
-                          : 'border-gray-200 hover:border-teal-300'
-                      }`}
-                      onClick={() => selectPolicy(policy.id)}
-                    >
-                      <div className="flex justify-between items-start">
-                        <div className="flex items-center">
-                          <FileText className="h-4 w-4 text-teal-600 mr-2" />
-                          <span className="font-medium">{policy.title}</span>
+                {isLoadingPolicies ? (
+                  <div className="text-center py-8">
+                    <div className="animate-spin h-6 w-6 border-4 border-teal-500 border-t-transparent rounded-full mx-auto"></div>
+                    <p className="mt-2 text-sm text-slate-500">Loading policies...</p>
+                  </div>
+                ) : (
+                  <>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      {displayedPolicies.map((policy) => (
+                        <div 
+                          key={policy.policy_id}
+                          className={`border rounded-md p-3 cursor-pointer transition-colors ${
+                            selectedPolicy === policy.policy_id 
+                              ? 'border-teal-500 bg-teal-50' 
+                              : 'border-gray-200 hover:border-teal-300'
+                          }`}
+                          onClick={() => selectPolicy(policy.policy_id)}
+                        >
+                          <div className="flex justify-between items-start">
+                            <div className="flex items-center">
+                              <FileText className="h-4 w-4 text-teal-600 mr-2" />
+                              <span className="font-medium">{policy.filename}</span>
+                            </div>
+                            <span className="bg-green-100 text-green-600 text-xs px-2 py-1 rounded-full">
+                              Active
+                            </span>
+                          </div>
+                          <div className="text-xs text-gray-500 mt-1">
+                            Uploaded: {new Date(policy.created_at).toLocaleDateString()}
+                          </div>
                         </div>
-                        {policy.status === "Active" && (
-                          <span className="bg-green-100 text-green-600 text-xs px-2 py-1 rounded-full">
-                            Active
-                          </span>
-                        )}
-                      </div>
-                      <div className="text-xs text-gray-500 mt-1">
-                        Uploaded: {new Date(policy.uploadDate).toLocaleDateString()}
-                      </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
+                    
+                    {policies.length > 4 && (
+                      <Button 
+                        variant="ghost" 
+                        className="mt-3 w-full text-sm text-teal-600"
+                        onClick={() => setShowAllPolicies(!showAllPolicies)}
+                      >
+                        {showAllPolicies ? "Show Less" : "Show More"}
+                      </Button>
+                    )}
+                  </>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -305,7 +374,7 @@ const Ask = () => {
                     {message.sender === "ai" && (
                       <div className="flex items-center mb-2">
                         <Avatar className="h-6 w-6 mr-2">
-                          <AvatarImage src="/placeholder.svg" />
+                          <AvatarImage src=""/>
                           <AvatarFallback className="bg-teal-100 text-teal-600 text-xs">AI</AvatarFallback>
                         </Avatar>
                         <span className="text-xs font-medium">AI Assistant</span>

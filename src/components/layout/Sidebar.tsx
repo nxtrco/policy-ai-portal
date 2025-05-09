@@ -1,5 +1,5 @@
 
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { 
   Home, 
@@ -8,9 +8,9 @@ import {
   BarChart, 
   Settings, 
   HelpCircle, 
-  LogOut 
+  LogOut,
+  FileQuestion
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 
 interface SidebarItemProps {
@@ -89,6 +89,12 @@ const Sidebar = () => {
             label="Ask Questions" 
             href="/ask" 
             isActive={location.pathname === "/ask"} 
+          />
+          <SidebarItem 
+            icon={FileQuestion} 
+            label="Questions" 
+            href="/questions" 
+            isActive={location.pathname === "/questions"} 
           />
           <SidebarItem 
             icon={BarChart} 

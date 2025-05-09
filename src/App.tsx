@@ -9,6 +9,7 @@ import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
 import Policies from "./pages/Policies";
 import Ask from "./pages/Ask";
+import Questions from "./pages/Questions";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
 
@@ -45,6 +46,14 @@ const App = () => (
             element={
               <ProtectedRoute>
                 <Ask />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/questions"
+            element={
+              <ProtectedRoute>
+                <Questions />
               </ProtectedRoute>
             }
           />
