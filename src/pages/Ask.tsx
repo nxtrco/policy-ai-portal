@@ -9,7 +9,6 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Label } from "@/components/ui/label";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -20,7 +19,6 @@ import {
   FileQuestion,
   History,
   ChevronRight,
-  ChevronDown,
   Sparkles,
   Upload,
   X,
@@ -37,14 +35,7 @@ interface Message {
   timestamp: Date;
 }
 
-// Define policy interface based on API response
-interface Policy {
-  policy_id: string;
-  filename: string;
-  created_at: string;
-}
-
-// Mock policy data for fallback
+// Mock policy data for UI display only
 const policiesData = [
   {
     id: 1,
@@ -100,61 +91,15 @@ const Ask = () => {
   
   // State for policy selection
   const [policyCategory, setPolicyCategory] = useState<"LSGO" | "HO">("LSGO");
-  const [selectedPolicy, setSelectedPolicy] = useState<string | null>(null);
+  const [selectedPolicy, setSelectedPolicy] = useState<string>("default-policy"); // Set a default value
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [inputMode, setInputMode] = useState<"text" | "file">("text");
   
-  // State for API policies
-  const [policies, setPolicies] = useState<Policy[]>([]);
-  const [isLoadingPolicies, setIsLoadingPolicies] = useState(true);
-  const [showAllPolicies, setShowAllPolicies] = useState(false);
+  // Add state for question document
+  const [questionDocument, setQuestionDocument] = useState<File | null>(null);
+  const questionFileInputRef = useRef<HTMLInputElement>(null);
   
-  // Fetch policies from API
-  useEffect(() => {
-    const fetchPolicies = async () => {
-      setIsLoadingPolicies(true);
-      
-      try {
-        const accessToken = localStorage.getItem("access_token");
-        
-        if (!accessToken) {
-          throw new Error("Authentication token not found");
-        }
-        
-        const response = await fetch(
-          "http://127.0.0.1:8000/api/v1/api/v1/complaints/policy-collection",
-          {
-            method: "GET",
-            headers: {
-              "accept": "application/json",
-              "Authorization": `Bearer ${accessToken}`
-            }
-          }
-        );
-        
-        const data = await response.json();
-        
-        if (!response.ok) {
-          throw new Error(data.message || "Failed to fetch policies");
-        }
-        
-        setPolicies(data.data || []);
-      } catch (error) {
-        console.error("Error fetching policies:", error);
-        toast({
-          variant: "destructive",
-          title: "Failed to load policies",
-          description: error instanceof Error ? error.message : "An unknown error occurred",
-        });
-      } finally {
-        setIsLoadingPolicies(false);
-      }
-    };
-    
-    fetchPolicies();
-  }, [toast]);
-  
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if ((!query.trim() && inputMode === "text") || (inputMode === "file" && !uploadedFile)) {
       toast({
         variant: "destructive",
@@ -164,11 +109,12 @@ const Ask = () => {
       return;
     }
     
-    if (!selectedPolicy) {
+    // Add validation for question document
+    if (!questionDocument) {
       toast({
         variant: "destructive",
-        title: "No policy selected",
-        description: "Please select a policy to query against",
+        title: "Missing question document",
+        description: "Please upload a question document",
       });
       return;
     }
@@ -187,25 +133,89 @@ const Ask = () => {
     
     setMessages(prev => [...prev, userMessage]);
     setIsLoading(true);
-    setQuery("");
     
-    if (inputMode === "file") {
-      setUploadedFile(null);
-    }
-    
-    // Simulate AI response
-    setTimeout(() => {
-      const selectedPolicyData = policies.find(p => p.policy_id === selectedPolicy);
+    try {
+      // Get the access token from localStorage
+      const accessToken = localStorage.getItem("access_token");
+      
+      if (!accessToken) {
+        throw new Error("Authentication token not found");
+      }
+      
+      // Create form data for API request
+      const formData = new FormData();
+      
+      // Add stage_one_details (empty string as shown in the example)
+      formData.append("stage_one_details", "string");
+      
+      // Add ombudsman (policy category)
+      formData.append("ombudsman", policyCategory);
+      
+      // Add question document
+      formData.append("question_answers", questionDocument);
+      
+      if (inputMode === "text") {
+        formData.append("complaint_format", "Manual");
+        formData.append("complaint_text", query);
+      } else if (uploadedFile) {
+        formData.append("complaint_format", getFileFormat(uploadedFile.name));
+        formData.append("complaint_file", uploadedFile);
+      }
+      
+      // Make API request to the correct endpoint
+      const response = await fetch(
+        "http://127.0.0.1:8000/api/v1/api/v1/complaints/generate-response",
+        {
+          method: "POST",
+          headers: {
+            "accept": "application/json",
+            "Authorization": `Bearer ${accessToken}`,
+          },
+          body: formData,
+        }
+      );
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to generate response");
+      }
+      
+      // Add AI response - extract formal_response from data.data
       const aiResponse: Message = {
         id: messages.length + 2,
-        content: generateAIResponse(inputMode === "text" ? query : `Document analysis for ${uploadedFile?.name}`, selectedPolicyData?.filename || ""),
+        content: data.data?.formal_response || "I've analyzed your query but couldn't generate a specific response.",
         sender: "ai",
         timestamp: new Date()
       };
       
       setMessages(prev => [...prev, aiResponse]);
+      
+      // Reset input fields
+      setQuery("");
+      if (inputMode === "file") {
+        setUploadedFile(null);
+        if (fileInputRef.current) {
+          fileInputRef.current.value = "";
+        }
+      }
+      
+    } catch (error) {
+      console.error("Error generating response:", error);
+      
+      // Add error message
+      const errorMessage: Message = {
+        id: messages.length + 2,
+        content: `Error: ${error instanceof Error ? error.message : "Failed to generate response. Please try again."}`,
+        sender: "ai",
+        timestamp: new Date()
+      };
+      
+      setMessages(prev => [...prev, errorMessage]);
+      
+    } finally {
       setIsLoading(false);
-    }, 1500);
+    }
   };
   
   const handleSampleQuestion = (question: string) => {
@@ -239,30 +249,61 @@ const Ask = () => {
     }
   };
   
-  const selectPolicy = (policyId: string) => {
-    setSelectedPolicy(policyId);
+  // Add handlers for question document upload
+  const handleQuestionFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setQuestionDocument(e.target.files[0]);
+    }
   };
-  
-  // Generate a simulated AI response based on the query
-  const generateAIResponse = (query: string, policyTitle: string) => {
-    // Keep the same AI response generation logic
-    if (query.toLowerCase().includes("building permit") || query.toLowerCase().includes("permits")) {
-      return `According to ${policyTitle}, all construction projects require a permit if they involve structural changes, increase the building footprint, or alter the exterior appearance. Applications must be submitted at least 30 days before commencing work and include detailed plans, engineer certifications for larger projects, and the appropriate fees based on project value. Emergency repairs may qualify for expedited permits under section 4.3 of the policy.`;
-    } else if (query.toLowerCase().includes("waste") || query.toLowerCase().includes("recycling")) {
-      return `The ${policyTitle} states that residential waste collection occurs weekly on designated days for each neighborhood. Recycling is collected bi-weekly, and hazardous waste must be taken to designated collection centers. The policy emphasizes reducing landfill waste through the 3Rs (Reduce, Reuse, Recycle) program. Commercial entities must arrange private waste collection services and comply with the Commercial Waste Disposal Guidelines (Section 7).`;
-    } else if (query.toLowerCase().includes("noise") || query.toLowerCase().includes("restriction")) {
-      return `The ${policyTitle} specifies that in residential areas, noise levels must not exceed 55 decibels between 7:00 AM and 10:00 PM, and 45 decibels between 10:00 PM and 7:00 AM. Construction noise is only permitted on weekdays from 8:00 AM to 6:00 PM and Saturdays from 9:00 AM to 5:00 PM. Special permits are required for events or construction work outside these hours. Fines for violations range from $250 to $1,000 based on the severity and frequency of infractions.`;
-    } else if (query.toLowerCase().includes("planning") || query.toLowerCase().includes("objection")) {
-      return `According to the ${policyTitle}, residents can file objections to planning applications within 14 days of public notification. Objections must be submitted in writing, clearly stating the specific concerns and how the proposed development impacts the objector. The council reviews all objections and may call for a planning committee meeting where objectors can present their concerns. The policy emphasizes that objections should relate to planning considerations (e.g., traffic, environment, privacy) rather than personal preferences or property values.`;
-    } else if (query.toLowerCase().includes("document") || query.toLowerCase().includes("uploaded")) {
-      return `I've analyzed the uploaded document related to ${policyTitle}. The document contains information about council procedures and policies. Key points include requirements for public consultations, environmental impact assessments, and approval workflows. The document references several sections of the Local Government Act and provides guidelines for implementation at the council level.`;
-    } else {
-      return `Based on ${policyTitle}, I couldn't find specific information about that query. Would you like me to search for related topics or would you prefer to rephrase your question? You can also upload additional policy documents if you believe the information should be available but isn't in our current database.`;
+
+  const handleQuestionFileDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      setQuestionDocument(e.dataTransfer.files[0]);
+    }
+  };
+
+  const removeQuestionDocument = () => {
+    setQuestionDocument(null);
+    if (questionFileInputRef.current) {
+      questionFileInputRef.current.value = "";
     }
   };
   
-  // Determine which policies to display based on showAllPolicies state
-  const displayedPolicies = showAllPolicies ? policies : policies.slice(0, 4);
+  // Generate a simulated AI response based on the query
+  const generateAIResponse = (query: string, policyTitle: string, questionDocName: string = "") => {
+    // Include reference to the question document in responses
+    const questionDocRef = questionDocName ? ` based on questions from "${questionDocName}"` : "";
+    
+    if (query.toLowerCase().includes("building permit") || query.toLowerCase().includes("permits")) {
+      return `According to ${policyTitle}${questionDocRef}, all construction projects require a permit if they involve structural changes, increase the building footprint, or alter the exterior appearance. Applications must be submitted at least 30 days before commencing work and include detailed plans, engineer certifications for larger projects, and the appropriate fees based on project value. Emergency repairs may qualify for expedited permits under section 4.3 of the policy.`;
+    } else if (query.toLowerCase().includes("waste") || query.toLowerCase().includes("recycling")) {
+      return `The ${policyTitle}${questionDocRef} states that residential waste collection occurs weekly on designated days for each neighborhood. Recycling is collected bi-weekly, and hazardous waste must be taken to designated collection centers. The policy emphasizes reducing landfill waste through the 3Rs (Reduce, Reuse, Recycle) program. Commercial entities must arrange private waste collection services and comply with the Commercial Waste Disposal Guidelines (Section 7).`;
+    } else if (query.toLowerCase().includes("noise") || query.toLowerCase().includes("restriction")) {
+      return `The ${policyTitle}${questionDocRef} specifies that in residential areas, noise levels must not exceed 55 decibels between 7:00 AM and 10:00 PM, and 45 decibels between 10:00 PM and 7:00 AM. Construction noise is only permitted on weekdays from 8:00 AM to 6:00 PM and Saturdays from 9:00 AM to 5:00 PM. Special permits are required for events or construction work outside these hours. Fines for violations range from $250 to $1,000 based on the severity and frequency of infractions.`;
+    } else if (query.toLowerCase().includes("planning") || query.toLowerCase().includes("objection")) {
+      return `According to the ${policyTitle}${questionDocRef}, residents can file objections to planning applications within 14 days of public notification. Objections must be submitted in writing, clearly stating the specific concerns and how the proposed development impacts the objector. The council reviews all objections and may call for a planning committee meeting where objectors can present their concerns. The policy emphasizes that objections should relate to planning considerations (e.g., traffic, environment, privacy) rather than personal preferences or property values.`;
+    } else if (query.toLowerCase().includes("document") || query.toLowerCase().includes("uploaded")) {
+      return `I've analyzed the uploaded document related to ${policyTitle}${questionDocRef}. The document contains information about council procedures and policies. Key points include requirements for public consultations, environmental impact assessments, and approval workflows. The document references several sections of the Local Government Act and provides guidelines for implementation at the council level.`;
+    } else {
+      return `Based on ${policyTitle}${questionDocRef}, I couldn't find specific information about that query. Would you like me to search for related topics or would you prefer to rephrase your question? You can also upload additional policy documents if you believe the information should be available but isn't in our current database.`;
+    }
+  };
+  
+  // Helper function to determine file format for API
+  const getFileFormat = (filename: string): string => {
+    const extension = filename.split('.').pop()?.toLowerCase();
+    switch (extension) {
+      case 'pdf':
+        return 'Pdf';
+      case 'docx':
+        return 'Docx';
+      case 'txt':
+        return 'Txt';
+      default:
+        return 'Manual'; // Default
+    }
+  };
   
   return (
     <DashboardLayout>
@@ -273,7 +314,7 @@ const Ask = () => {
             <p className="text-slate-500">Ask questions about your council policies</p>
           </div>
           
-          {/* Policy selection cards */}
+          {/* Policy selection card - simplified */}
           <Card className="mb-4">
             <CardHeader className="py-4 px-6">
               <CardTitle className="text-lg">Select Policy Category</CardTitle>
@@ -282,10 +323,7 @@ const Ask = () => {
             <CardContent>
               <RadioGroup 
                 value={policyCategory} 
-                onValueChange={(value) => {
-                  setPolicyCategory(value as "LSGO" | "HO");
-                  setSelectedPolicy(null);
-                }}
+                onValueChange={(value) => setPolicyCategory(value as "LSGO" | "HO")}
                 className="flex space-x-4"
               >
                 <div className="flex items-center space-x-2">
@@ -297,54 +335,67 @@ const Ask = () => {
                   <Label htmlFor="HO">HO</Label>
                 </div>
               </RadioGroup>
-              
-              <div className="mt-4">
-                <h3 className="font-medium mb-2">Available Policies</h3>
-                {isLoadingPolicies ? (
-                  <div className="text-center py-8">
-                    <div className="animate-spin h-6 w-6 border-4 border-teal-500 border-t-transparent rounded-full mx-auto"></div>
-                    <p className="mt-2 text-sm text-slate-500">Loading policies...</p>
-                  </div>
-                ) : (
+            </CardContent>
+          </Card>
+          
+          {/* Add this card right after the policy category card */}
+          <Card className="mb-4">
+            <CardHeader className="py-4 px-6">
+              <CardTitle className="text-lg flex items-center">
+                <FileText className="h-4 w-4 mr-2 text-slate-500" />
+                Upload Question Document
+              </CardTitle>
+              <CardDescription>
+                Upload a document containing your questions (required)
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div 
+                className="border-2 border-dashed rounded-lg p-4 text-center cursor-pointer hover:bg-slate-50 transition-colors"
+                onDrop={handleQuestionFileDrop}
+                onDragOver={handleDragOver}
+                onClick={() => questionFileInputRef.current?.click()}
+              >
+                {!questionDocument ? (
                   <>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      {displayedPolicies.map((policy) => (
-                        <div 
-                          key={policy.policy_id}
-                          className={`border rounded-md p-3 cursor-pointer transition-colors ${
-                            selectedPolicy === policy.policy_id 
-                              ? 'border-teal-500 bg-teal-50' 
-                              : 'border-gray-200 hover:border-teal-300'
-                          }`}
-                          onClick={() => selectPolicy(policy.policy_id)}
-                        >
-                          <div className="flex justify-between items-start">
-                            <div className="flex items-center">
-                              <FileText className="h-4 w-4 text-teal-600 mr-2" />
-                              <span className="font-medium">{policy.filename}</span>
-                            </div>
-                            <span className="bg-green-100 text-green-600 text-xs px-2 py-1 rounded-full">
-                              Active
-                            </span>
-                          </div>
-                          <div className="text-xs text-gray-500 mt-1">
-                            Uploaded: {new Date(policy.created_at).toLocaleDateString()}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                    
-                    {policies.length > 4 && (
-                      <Button 
-                        variant="ghost" 
-                        className="mt-3 w-full text-sm text-teal-600"
-                        onClick={() => setShowAllPolicies(!showAllPolicies)}
-                      >
-                        {showAllPolicies ? "Show Less" : "Show More"}
-                      </Button>
-                    )}
+                    <Upload className="h-8 w-8 mx-auto text-slate-400 mb-2" />
+                    <p className="text-sm text-slate-600">
+                      Drop your question document here, or click to browse
+                    </p>
+                    <p className="text-xs text-slate-500 mt-1">
+                      Supports PDF, DOCX, TXT files up to 10MB
+                    </p>
                   </>
+                ) : (
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center">
+                      <File className="h-6 w-6 text-teal-600 mr-2" />
+                      <div>
+                        <p className="text-sm font-medium text-left">{questionDocument.name}</p>
+                        <p className="text-xs text-slate-500 text-left">
+                          {Math.round(questionDocument.size / 1024)} KB
+                        </p>
+                      </div>
+                    </div>
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        removeQuestionDocument();
+                      }}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
                 )}
+                <input 
+                  type="file"
+                  ref={questionFileInputRef}
+                  className="hidden"
+                  accept=".pdf,.docx,.txt"
+                  onChange={handleQuestionFileChange}
+                />
               </div>
             </CardContent>
           </Card>
@@ -438,7 +489,7 @@ const Ask = () => {
                   <Button 
                     className="ml-2 bg-teal-600 hover:bg-teal-700" 
                     onClick={handleSendMessage}
-                    disabled={!query.trim() || isLoading || !selectedPolicy}
+                    disabled={!query.trim() || isLoading}
                   >
                     <Send className="h-4 w-4" />
                   </Button>
@@ -495,7 +546,7 @@ const Ask = () => {
                   <div className="flex justify-end mt-2">
                     <Button 
                       onClick={handleSendMessage}
-                      disabled={!uploadedFile || isLoading || !selectedPolicy}
+                      disabled={!uploadedFile || isLoading}
                       className="bg-teal-600 hover:bg-teal-700"
                     >
                       Submit Document
