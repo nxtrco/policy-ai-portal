@@ -166,9 +166,9 @@ const Policies = () => {
         throw new Error("Authentication token not found");
       }
       
-      // This is a placeholder API endpoint - replace with the actual endpoint when available
+      // Updated endpoint to match the correct API format
       const response = await fetch(
-        `http://127.0.0.1:8000/api/v1/api/v1/complaints/policy/${policyId}`,
+        `http://127.0.0.1:8000/api/v1/api/v1/complaints/policy?policy_id=${policyId}`,
         {
           method: "DELETE",
           headers: {
@@ -178,8 +178,11 @@ const Policies = () => {
         }
       );
       
-      // For now, we'll simulate a successful deletion even if the API doesn't exist
-      // In a real implementation, you would check response.ok
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to delete policy");
+      }
       
       // Remove the policy from the local state
       setPolicies(policies.filter(policy => policy.policy_id !== policyId));
