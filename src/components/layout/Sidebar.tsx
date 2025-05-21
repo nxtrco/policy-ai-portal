@@ -86,12 +86,6 @@ const Sidebar = () => {
             isActive={location.pathname === "/policies"} 
           />
           <SidebarItem 
-            icon={MessageSquare} 
-            label="Draft response" 
-            href="/ask" 
-            isActive={location.pathname === "/ask"} 
-          />
-          <SidebarItem 
             icon={FileQuestion} 
             label="Extract Questions" 
             href="/questions" 
@@ -99,9 +93,15 @@ const Sidebar = () => {
           />
           <SidebarItem
             icon={Brain}
-            label="Summary"
+            label="Summarize"
             href="/summary"
             isActive={location.pathname === "/summary"}
+          />
+          <SidebarItem 
+            icon={MessageSquare} 
+            label="Draft response" 
+            href="/ask" 
+            isActive={location.pathname === "/ask"} 
           />
         </nav>
       </div>
