@@ -26,6 +26,7 @@ import {
   Loader2
 } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Input } from "@/components/ui/input";
 
 const Ask = () => {
   const [policyCategory, setPolicyCategory] = useState<"LSGO" | "HO">("LSGO");
@@ -33,6 +34,9 @@ const Ask = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [response, setResponse] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [dateInitialComplaint, setDateInitialComplaint] = useState<string>("");
+  const [dateStage1Response, setDateStage1Response] = useState<string>("");
+  const [dateEscalation, setDateEscalation] = useState<string>("");
   const questionFileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
   const isMobile = useIsMobile();
@@ -67,12 +71,17 @@ const Ask = () => {
       // Add ombudsman (policy category)
       formData.append("ombudsman", policyCategory);
       
+      // Add date fields
+      formData.append("date_initial_complaint", dateInitialComplaint);
+      formData.append("date_stage1_response", dateStage1Response);
+      formData.append("date_escalation", dateEscalation);
+      
       // Add question document
       formData.append("question_answers", questionDocument);
       
       // Make API request to the correct endpoint
       const response = await fetch(
-        "http://localhost:8000/api/v1/api/v1/complaints/generate-response",
+        "https://complain-management-be-1079206590069.europe-west1.run.app/api/v1/complaints/generate-response",
         {
           method: "POST",
           headers: {
@@ -180,6 +189,43 @@ const Ask = () => {
                   <Label htmlFor="HO">HO</Label>
                 </div>
               </RadioGroup>
+            </CardContent>
+          </Card>
+          
+          {/* Date fields card */}
+          <Card className="mb-4">
+            <CardHeader className="py-4 px-6">
+              <CardTitle className="text-lg">Complaint Dates</CardTitle>
+              <CardDescription>Enter the relevant dates for your complaint</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="dateInitialComplaint">Initial Complaint Date</Label>
+                <Input
+                  id="dateInitialComplaint"
+                  type="date"
+                  value={dateInitialComplaint}
+                  onChange={(e) => setDateInitialComplaint(e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="dateStage1Response">Stage 1 Response Date</Label>
+                <Input
+                  id="dateStage1Response"
+                  type="date"
+                  value={dateStage1Response}
+                  onChange={(e) => setDateStage1Response(e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="dateEscalation">Escalation Date</Label>
+                <Input
+                  id="dateEscalation"
+                  type="date"
+                  value={dateEscalation}
+                  onChange={(e) => setDateEscalation(e.target.value)}
+                />
+              </div>
             </CardContent>
           </Card>
           

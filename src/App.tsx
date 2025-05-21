@@ -10,6 +10,7 @@ import Dashboard from "./pages/Dashboard";
 import Policies from "./pages/Policies";
 import Ask from "./pages/Ask";
 import Questions from "./pages/Questions";
+import Summary from "./pages/Summary";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
 
@@ -54,6 +55,14 @@ const App = () => (
             element={
               <ProtectedRoute>
                 <Questions />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/summary"
+            element={
+              <ProtectedRoute>
+                <Summary />
               </ProtectedRoute>
             }
           />

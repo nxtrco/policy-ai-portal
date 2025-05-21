@@ -128,7 +128,7 @@ const Policies = () => {
       }
       
       const response = await fetch(
-        "http://127.0.0.1:8000/api/v1/api/v1/complaints/policy-collection",
+        "https://complain-management-be-1079206590069.europe-west1.run.app/api/v1/complaints/policy-collection",
         {
           method: "GET",
           headers: {
@@ -168,7 +168,7 @@ const Policies = () => {
       
       // Updated endpoint to match the correct API format
       const response = await fetch(
-        `http://127.0.0.1:8000/api/v1/api/v1/complaints/policy?policy_id=${policyId}`,
+        `https://complain-management-be-1079206590069.europe-west1.run.app/api/v1/complaints/policy?policy_id=${policyId}`,
         {
           method: "DELETE",
           headers: {
@@ -213,8 +213,8 @@ const Policies = () => {
   
   const UploadDialog = () => {
     const [files, setFiles] = useState<FileList | null>(null);
-    const [policyName, setPolicyName] = useState("");
-    const [category, setCategory] = useState("");
+    // const [policyName, setPolicyName] = useState("");
+    // const [category, setCategory] = useState("");
     const [isUploading, setIsUploading] = useState(false);
     
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -224,7 +224,7 @@ const Policies = () => {
     };
     
     const handleUpload = async () => {
-      if (!files || !policyName || !category) {
+      if (!files) {
         toast({
           variant: "destructive",
           title: "Missing information",
@@ -250,7 +250,7 @@ const Policies = () => {
         
         // Make API request to upload policy
         const response = await fetch(
-          "http://127.0.0.1:8000/api/v1/api/v1/complaints/configure-policy",
+          "https://complain-management-be-1079206590069.europe-west1.run.app/api/v1/complaints/policy-create",
           {
             method: "POST",
             headers: {
@@ -269,12 +269,10 @@ const Policies = () => {
         
         toast({
           title: "Policy uploaded",
-          description: `"${policyName}" has been successfully uploaded.`,
+          description: `Policy has been successfully uploaded.`,
         });
         
         // Reset form
-        setPolicyName("");
-        setCategory("");
         setFiles(null);
         
         // Close the dialog
@@ -326,7 +324,7 @@ const Policies = () => {
           </DialogHeader>
           
           <div className="space-y-4 py-4">
-            <div className="space-y-2">
+            {/* <div className="space-y-2">
               <label htmlFor="policyName" className="text-sm font-medium">
                 Policy Name
               </label>
@@ -348,7 +346,7 @@ const Policies = () => {
                 onChange={(e) => setCategory(e.target.value)}
                 placeholder="e.g. Environment, Planning, Safety"
               />
-            </div>
+            </div> */}
             
             <div className="space-y-2">
               <label htmlFor="file" className="text-sm font-medium">

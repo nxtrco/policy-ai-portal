@@ -4,12 +4,13 @@ import { cn } from "@/lib/utils";
 import { 
   Home, 
   FileText, 
-  MessageSquare, 
-  BarChart, 
+  MessageSquare,
   Settings, 
   HelpCircle, 
   LogOut,
-  FileQuestion
+  FileQuestion,
+  Brain,
+
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -86,39 +87,27 @@ const Sidebar = () => {
           />
           <SidebarItem 
             icon={MessageSquare} 
-            label="Ask Questions" 
+            label="Draft response" 
             href="/ask" 
             isActive={location.pathname === "/ask"} 
           />
           <SidebarItem 
             icon={FileQuestion} 
-            label="Questions" 
+            label="Extract Questions" 
             href="/questions" 
             isActive={location.pathname === "/questions"} 
           />
-          <SidebarItem 
-            icon={BarChart} 
-            label="Analytics" 
-            href="/analytics" 
-            isActive={location.pathname === "/analytics"} 
+          <SidebarItem
+            icon={Brain}
+            label="Summary"
+            href="/summary"
+            isActive={location.pathname === "/summary"}
           />
         </nav>
       </div>
       
       <div className="border-t py-4 px-3">
         <nav className="space-y-1">
-          <SidebarItem 
-            icon={Settings} 
-            label="Settings" 
-            href="/settings" 
-            isActive={location.pathname === "/settings"} 
-          />
-          <SidebarItem 
-            icon={HelpCircle} 
-            label="Help & Information" 
-            href="/help" 
-            isActive={location.pathname === "/help"} 
-          />
           <SidebarItem 
             icon={LogOut} 
             label="Log out" 
