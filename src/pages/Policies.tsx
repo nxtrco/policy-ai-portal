@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { 
@@ -41,6 +40,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
+import { apiFetch } from '@/lib/api';
 
 // Define policy interface based on API response
 interface Policy {
@@ -127,7 +127,7 @@ const Policies = () => {
         throw new Error("Authentication token not found");
       }
       
-      const response = await fetch(
+      const response = await apiFetch(
         "https://complain-management-be-1079206590069.europe-west1.run.app/api/v1/complaints/policy-collection",
         {
           method: "GET",
@@ -167,7 +167,7 @@ const Policies = () => {
       }
       
       // Updated endpoint to match the correct API format
-      const response = await fetch(
+      const response = await apiFetch(
         `https://complain-management-be-1079206590069.europe-west1.run.app/api/v1/complaints/policy?policy_id=${policyId}`,
         {
           method: "DELETE",
@@ -249,7 +249,7 @@ const Policies = () => {
         formData.append("policy_format", getFileFormat(files[0].name));
         
         // Make API request to upload policy
-        const response = await fetch(
+        const response = await apiFetch(
           "https://complain-management-be-1079206590069.europe-west1.run.app/api/v1/complaints/policy-create",
           {
             method: "POST",

@@ -32,6 +32,8 @@ import {
   TabsTrigger,
 } from "@/components/ui/tabs";
 
+import { apiFetch } from '@/lib/api';
+
 const Summary = () => {
   const [inputMode, setInputMode] = useState<"text" | "file">("text");
   const [textInput, setTextInput] = useState("");
@@ -82,7 +84,7 @@ const Summary = () => {
         formData.append("content_file", uploadedFile);
       }
 
-      const response = await fetch(
+      const response = await apiFetch(
         "https://complain-management-be-1079206590069.europe-west1.run.app/api/v1/complaints/generate-summary",
         {
           method: "POST",

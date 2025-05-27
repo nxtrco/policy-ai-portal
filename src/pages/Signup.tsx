@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -10,9 +9,8 @@ import { useToast } from "@/hooks/use-toast";
 const Signup = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
-  const [council, setCouncil] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -31,27 +29,40 @@ const Signup = () => {
     
     setIsLoading(true);
     
-    // Simulate registration
     try {
-      // This would normally be an API call to register
-      setTimeout(() => {
-        // Mock successful registration
-        localStorage.setItem("isAuthenticated", "true");
-        localStorage.setItem("user", JSON.stringify({ name, email, council }));
-        
+      const payload = {
+        email,
+        username,
+        password,
+      };
+      const response = await fetch(
+        "https://complain-management-be-1079206590069.europe-west1.run.app/api/v1/auth/register",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            accept: "application/json",
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+      const data = await response.json();
+      if (response.ok && data.status_code === 200) {
         toast({
           title: "Account created",
-          description: "Welcome to Policy AI Portal",
+          description: "User registered successfully. Please log in.",
         });
-        
-        navigate("/dashboard");
-      }, 1500);
+        navigate("/login");
+      } else {
+        throw new Error(data.message || "Registration failed");
+      }
     } catch (error) {
       toast({
         variant: "destructive",
         title: "Registration failed",
-        description: "Please check your information and try again",
+        description: error instanceof Error ? error.message : "Please check your information and try again",
       });
+    } finally {
       setIsLoading(false);
     }
   };
@@ -62,41 +73,30 @@ const Signup = () => {
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-center">Create an account</CardTitle>
           <CardDescription className="text-center">
-            Enter your details to create your council account
+            Enter your details to create your account
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="name">Full Name</Label>
-              <Input
-                id="name"
-                type="text"
-                placeholder="John Smith"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-              />
-            </div>
-            <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
                 type="email"
-                placeholder="council@example.gov"
+                placeholder="you@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="council">Council Name</Label>
+              <Label htmlFor="username">Username</Label>
               <Input
-                id="council"
+                id="username"
                 type="text"
-                placeholder="City of Example"
-                value={council}
-                onChange={(e) => setCouncil(e.target.value)}
+                placeholder="Username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 required
               />
             </div>
