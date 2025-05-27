@@ -14,10 +14,10 @@ const Index = () => {
       <div className="container mx-auto px-4 py-12 flex flex-col items-center justify-center min-h-screen">
         <div className="text-center max-w-3xl mx-auto">
           <h1 className="text-4xl md:text-6xl font-bold mb-4 text-slate-800">
-            Policy AI Portal
+            Complaints AI Portal
           </h1>
           <p className="text-xl text-slate-600 mb-8">
-            Upload your council policies and get AI-powered insights and answers to your policy questions.
+            A GDPR-safe tool that generates professional complaint responses by drawing on guidance from various Ombudsmen.
           </p>
           <div className="flex flex-col md:flex-row gap-4 justify-center">
             <Button 
@@ -45,8 +45,8 @@ const Index = () => {
                 <polyline points="14 2 14 8 20 8"/>
               </svg>
             </div>
-            <h3 className="text-xl font-semibold mb-2">Upload Policies</h3>
-            <p className="text-slate-600">Easily upload and manage your council policy documents in one place.</p>
+            <h3 className="text-xl font-semibold mb-2">Extract Questions</h3>
+            <p className="text-slate-600">Extracts questions and queries requiring investigation from your complaint</p>
           </div>
           
           <div className="bg-white p-6 rounded-lg shadow-md">
@@ -57,8 +57,8 @@ const Index = () => {
                 <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
               </svg>
             </div>
-            <h3 className="text-xl font-semibold mb-2">AI Analysis</h3>
-            <p className="text-slate-600">Get powerful AI-driven insights and analysis of your policy documents.</p>
+            <h3 className="text-xl font-semibold mb-2">Summarize</h3>
+            <p className="text-slate-600">Summarises your complaint to 2-3 paragraphs so it can be included in your complaint response</p>
           </div>
           
           <div className="bg-white p-6 rounded-lg shadow-md">
@@ -67,8 +67,8 @@ const Index = () => {
                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
               </svg>
             </div>
-            <h3 className="text-xl font-semibold mb-2">Ask Questions</h3>
-            <p className="text-slate-600">Ask questions about your policies and get accurate answers instantly.</p>
+            <h3 className="text-xl font-semibold mb-2">Draft response</h3>
+            <p className="text-slate-600">Submit the Q&A template, and receive professional complaint content ready to copy into your formal response</p>
           </div>
         </div>
       </div>

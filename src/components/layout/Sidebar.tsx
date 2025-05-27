@@ -1,4 +1,3 @@
-
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { 
@@ -10,6 +9,7 @@ import {
   LogOut,
   FileQuestion,
   Brain,
+  UploadIcon
 
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -20,19 +20,21 @@ interface SidebarItemProps {
   href: string;
   isActive?: boolean;
   onClick?: () => void;
+  highlighted?: boolean;
 }
 
-const SidebarItem = ({ icon: Icon, label, href, isActive, onClick }: SidebarItemProps) => {
+const SidebarItem = ({ icon: Icon, label, href, isActive, onClick, highlighted }: SidebarItemProps) => {
   return (
     <Link
       to={href}
       onClick={onClick}
       className={cn(
         "flex items-center gap-3 rounded-lg px-3 py-2 text-slate-600 transition-all hover:text-slate-900",
-        isActive ? "bg-slate-100 text-slate-900 font-medium" : "hover:bg-slate-50"
+        isActive ? "bg-slate-100 text-slate-900 font-medium" : "hover:bg-slate-50",
+        highlighted && "bg-teal-600 text-white font-bold shadow-md hover:bg-teal-700 border border-teal-700"
       )}
     >
-      <Icon className="h-5 w-5" />
+      <Icon className={cn("h-5 w-5", highlighted && "text-white")} />
       <span>{label}</span>
     </Link>
   );
@@ -67,7 +69,7 @@ const Sidebar = () => {
           <div className="bg-teal-600 h-8 w-8 rounded-md flex items-center justify-center">
             <span className="text-white font-bold text-lg">P</span>
           </div>
-          <span className="font-bold text-xl">Policy AI</span>
+          <span className="font-bold text-xl">Complaints AI</span>
         </div>
       </div>
       
@@ -78,12 +80,6 @@ const Sidebar = () => {
             label="Dashboard" 
             href="/dashboard" 
             isActive={location.pathname === "/dashboard"} 
-          />
-          <SidebarItem 
-            icon={FileText} 
-            label="Policies" 
-            href="/policies" 
-            isActive={location.pathname === "/policies"} 
           />
           <SidebarItem 
             icon={FileQuestion} 
@@ -106,8 +102,15 @@ const Sidebar = () => {
         </nav>
       </div>
       
-      <div className="border-t py-4 px-3">
+      <div className="py-4 px-3">
         <nav className="space-y-1">
+          <SidebarItem 
+            icon={UploadIcon} 
+            label="Upload Policies" 
+            href="/policies" 
+            isActive={location.pathname === "/policies"} 
+            highlighted={true}
+          />
           <SidebarItem 
             icon={LogOut} 
             label="Log out" 
