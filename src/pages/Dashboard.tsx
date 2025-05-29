@@ -45,12 +45,12 @@ const Dashboard = () => {
     {
       icon: FileText,
       title: "Complaint Document Analysis",
-      description: "Upload and analyze complaint documents with our advanced AI system. Get instant insights and interpretations of complex complaint details."
+      description: "Upload and analyse complaint documents with our advanced AI system extracting the required information quickly and efficiently."
     },
     {
       icon: Search,
-      title: "Smart Complaint Processing",
-      description: "Process complaints efficiently with AI-powered analysis. Get accurate categorization and priority assessment based on complaint content."
+      title: "Summarise Content Quickly",
+      description: "Summarise text from previous correspondence so that it can be included in your latest response without taking up too much room."
     },
     {
       icon: MessageSquare,
@@ -79,8 +79,7 @@ const Dashboard = () => {
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-slate-800 mb-4">Welcome to Complaints Management Portal</h1>
         <p className="text-slate-600 max-w-3xl">
-          Your intelligent assistant for complaint management, response generation, and automated handling. 
-          Streamline your workflow and ensure consistent, compliant communications for all complaints.
+          Your intelligent assistant for complaint management and response generation.
         </p>
       </div>
 

@@ -409,7 +409,7 @@ const Policies = () => {
       <div className="mb-6 flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold text-slate-800">Policies</h1>
-          <p className="text-slate-500">Manage and query your council policies</p>
+          <p className="text-slate-500">Upload your council policies</p>
         </div>
         <UploadDialog />
       </div>

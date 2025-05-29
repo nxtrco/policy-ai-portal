@@ -95,7 +95,7 @@ const Sidebar = () => {
           />
           <SidebarItem 
             icon={MessageSquare} 
-            label="Draft response" 
+            label="Draft Response" 
             href="/ask" 
             isActive={location.pathname === "/ask"} 
           />

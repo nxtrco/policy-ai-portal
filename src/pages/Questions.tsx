@@ -120,7 +120,7 @@ const Questions = () => {
       // Create AI response with extracted data
       const aiResponse: Message = {
         id: messages.length + 2,
-        content: "I've analyzed your complaint and extracted the following information:",
+        content: "I've analysed your complaint and extracted the following information:",
         sender: "ai",
         timestamp: new Date(),
         extractedData: data.data
@@ -328,7 +328,7 @@ const Questions = () => {
                     disabled={!query.trim() || isLoading}
                   >
                     <Send className="h-4 w-4 mr-2" />
-                    Analyze
+                    Analyse
                   </Button>
                 </div>
               </div>
@@ -388,7 +388,7 @@ const Questions = () => {
                     className="bg-teal-600 hover:bg-teal-700"
                   >
                     <Send className="h-4 w-4 mr-2" />
-                    Analyze Document
+                    Analyse Document
                   </Button>
                 </div>
               </div>

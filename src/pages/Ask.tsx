@@ -17,13 +17,13 @@ import {
   FileText, 
   History,
   ChevronRight,
-  Sparkles,
   Upload,
   X,
   File,
   Copy,
   Check,
-  Loader2
+  Loader2,
+  Download
 } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Input } from "@/components/ui/input";
@@ -165,8 +165,8 @@ const Ask = () => {
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 h-[calc(100vh-140px)]">
         <div className={`${response ? "lg:col-span-2" : "lg:col-span-3"} flex flex-col h-full`}>
           <div className="mb-4">
-            <h1 className="text-2xl font-bold text-slate-800">Ask About Policies</h1>
-            <p className="text-slate-500">Ask questions about your council policies</p>
+            {/* <h1 className="text-2xl font-bold text-slate-800">Ask About Policies</h1>
+            <p className="text-slate-500">Ask questions about your council policies</p> */}
           </div>
           
           {/* Policy selection card - simplified */}
@@ -238,7 +238,7 @@ const Ask = () => {
                 Upload Question Document
               </CardTitle>
               <CardDescription>
-                Upload a document containing your questions (required)
+                Upload a document containing your questions and answers (required)
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -252,7 +252,7 @@ const Ask = () => {
                   <>
                     <Upload className="h-8 w-8 mx-auto text-slate-400 mb-2" />
                     <p className="text-sm text-slate-600">
-                      Drop your question document here, or click to browse
+                      Drop your document here, or click to browse
                     </p>
                     <p className="text-xs text-slate-500 mt-1">
                       Supports PDF, DOCX, TXT files up to 10MB
@@ -383,20 +383,27 @@ const Ask = () => {
             <Card>
               <CardHeader className="py-4 px-6">
                 <CardTitle className="text-sm flex items-center">
-                  <Sparkles className="h-4 w-4 mr-2 text-slate-500" />
-                  Features
+                  <FileText className="h-4 w-4 mr-2 text-slate-500" />
+                  Q/A Template
                 </CardTitle>
               </CardHeader>
               <CardContent className="px-6 py-2">
-                <div className="space-y-2 text-xs text-slate-600">
-                  <div className="flex items-start space-x-2">
-                    <FileText className="h-3 w-3 mt-0.5 text-teal-600 flex-shrink-0" />
-                    <span>Upload question documents in various formats</span>
-                  </div>
-                  <div className="flex items-start space-x-2">
-                    <FileText className="h-3 w-3 mt-0.5 text-teal-600 flex-shrink-0" />
-                    <span>Select from different policy categories</span>
-                  </div>
+                <div className="space-y-4">
+                  <p className="text-xs text-slate-600">
+                    Download our template to help structure your questions and answers properly.
+                  </p>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="w-full"
+                    onClick={() => {
+                      // Link to the template file in the public directory
+                      window.open('/templates/qa_template.docx', '_blank');
+                    }}
+                  >
+                    <Download className="h-4 w-4 mr-2" />
+                    Download Template
+                  </Button>
                 </div>
               </CardContent>
             </Card>

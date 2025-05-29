@@ -17,7 +17,7 @@ const Index = () => {
             Complaints AI Portal
           </h1>
           <p className="text-xl text-slate-600 mb-8">
-            A GDPR-safe tool that generates professional complaint responses by drawing on guidance from various Ombudsmen.
+            A GDPR-safe tool that generates professional complaint responses by drawing on guidance from the various Ombudsmen.
           </p>
           <div className="flex flex-col md:flex-row gap-4 justify-center">
             <Button 
