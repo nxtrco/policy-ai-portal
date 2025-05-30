@@ -57,7 +57,7 @@ const Index = () => {
                 <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
               </svg>
             </div>
-            <h3 className="text-xl font-semibold mb-2">Summarize</h3>
+            <h3 className="text-xl font-semibold mb-2">Summarise</h3>
             <p className="text-slate-600">Summarises your complaint to 2-3 paragraphs so it can be included in your complaint response</p>
           </div>
           
@@ -67,7 +67,7 @@ const Index = () => {
                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
               </svg>
             </div>
-            <h3 className="text-xl font-semibold mb-2">Draft response</h3>
+            <h3 className="text-xl font-semibold mb-2">Draft Response</h3>
             <p className="text-slate-600">Submit the Q&A template, and receive professional complaint content ready to copy into your formal response</p>
           </div>
         </div>

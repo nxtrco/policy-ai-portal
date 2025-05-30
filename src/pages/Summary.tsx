@@ -50,7 +50,7 @@ const Summary = () => {
       toast({
         variant: "destructive",
         title: "Missing input",
-        description: "Please enter text to summarize",
+        description: "Please enter text to summarise",
       });
       return;
     }
@@ -59,7 +59,7 @@ const Summary = () => {
       toast({
         variant: "destructive",
         title: "Missing file",
-        description: "Please upload a document to summarize",
+        description: "Please upload a document to summarise",
       });
       return;
     }
@@ -106,7 +106,7 @@ const Summary = () => {
 
       toast({
         title: "Summary generated",
-        description: "Your document has been successfully summarized",
+        description: "Your document has been successfully summarised",
       });
     } catch (error) {
       console.error("Error generating summary:", error);
@@ -193,7 +193,7 @@ const Summary = () => {
               Input Content
             </CardTitle>
             <CardDescription>
-              Enter text or upload a document to summarize
+              Enter text or upload a document to summarise
             </CardDescription>
           </CardHeader>
 
@@ -215,7 +215,7 @@ const Summary = () => {
 
               <TabsContent value="text">
                 <Textarea
-                  placeholder="Enter the text you want to summarize..."
+                  placeholder="Enter the text you want to summarise..."
                   className="min-h-[300px] resize-none"
                   value={textInput}
                   onChange={(e) => setTextInput(e.target.value)}

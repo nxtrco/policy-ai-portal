@@ -89,7 +89,7 @@ const Sidebar = () => {
           />
           <SidebarItem
             icon={Brain}
-            label="Summarize"
+            label="Summarise"
             href="/summary"
             isActive={location.pathname === "/summary"}
           />
