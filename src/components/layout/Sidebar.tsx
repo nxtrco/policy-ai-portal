@@ -9,8 +9,8 @@ import {
   LogOut,
   FileQuestion,
   Brain,
-  UploadIcon
-
+  UploadIcon,
+  User as UserIcon
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -62,6 +62,8 @@ const Sidebar = () => {
     }, 100);
   };
   
+  const user = JSON.parse(localStorage.getItem("user") || '{}');
+  
   return (
     <div className="h-screen w-64 border-r bg-white flex flex-col">
       <div className="p-4 border-b">
@@ -110,6 +112,21 @@ const Sidebar = () => {
             href="/policies" 
             isActive={location.pathname === "/policies"} 
             highlighted={true}
+          />
+          <hr className="py-2" />
+          {user.email === "admin@admin.com" && (
+            <SidebarItem
+              icon={UserIcon}
+              label="User Management"
+              href="/user-management"
+              isActive={location.pathname === "/user-management"}
+            />
+          )}
+          <SidebarItem
+            icon={Settings}
+            label="Change Password"
+            href="/change-password"
+            isActive={location.pathname === "/change-password"}
           />
           <SidebarItem 
             icon={LogOut} 
