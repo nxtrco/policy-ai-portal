@@ -42,6 +42,16 @@ const Ask = () => {
   const { toast } = useToast();
   const isMobile = useIsMobile();
   
+  const formatDate = (dateString: string): string => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-GB', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric'
+    });
+  };
+
   const handleSubmit = async () => {
     if (!questionDocument) {
       toast({
@@ -72,10 +82,10 @@ const Ask = () => {
       // Add ombudsman (policy category)
       formData.append("ombudsman", policyCategory);
       
-      // Add date fields
-      formData.append("date_initial_complaint", dateInitialComplaint);
-      formData.append("date_stage1_response", dateStage1Response);
-      formData.append("date_escalation", dateEscalation);
+      // Add date fields with formatted dates
+      formData.append("date_initial_complaint", formatDate(dateInitialComplaint));
+      formData.append("date_stage1_response", formatDate(dateStage1Response));
+      formData.append("date_escalation", formatDate(dateEscalation));
       
       // Add question document
       formData.append("question_answers", questionDocument);
