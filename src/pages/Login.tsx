@@ -126,17 +126,6 @@ const Login = () => {
             </Button>
           </form>
         </CardContent>
-        <CardFooter className="flex justify-center">
-          <div className="text-sm text-slate-600">
-            Don't have an account?{" "}
-            <Link
-              to="/signup"
-              className="text-teal-600 hover:text-teal-800 font-medium"
-            >
-              Sign up
-            </Link>
-          </div>
-        </CardFooter>
       </Card>
     </div>
   );
