@@ -15,7 +15,6 @@ import { useToast } from "@/hooks/use-toast";
 
 import {
   FileText,
-  Upload,
   File,
   X,
   Send,
