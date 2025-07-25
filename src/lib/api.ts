@@ -1,3 +1,5 @@
+import { API_URL } from '@/config/env';
+
 export async function apiFetch(url: string, options: RequestInit = {}) {
   const accessToken = localStorage.getItem('access_token');
   const headers = {
@@ -15,4 +17,9 @@ export async function apiFetch(url: string, options: RequestInit = {}) {
   }
 
   return response;
+}
+
+// Helper function to build API URLs
+export function buildApiUrl(endpoint: string): string {
+  return `${API_URL}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
 } 

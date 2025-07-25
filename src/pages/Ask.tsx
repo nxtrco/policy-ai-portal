@@ -27,7 +27,7 @@ import {
 } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Input } from "@/components/ui/input";
-import { apiFetch } from '@/lib/api';
+import { apiFetch, buildApiUrl } from '@/lib/api';
 
 const Ask = () => {
   const [policyCategory, setPolicyCategory] = useState<"LSGO" | "HO">("LSGO");
@@ -92,7 +92,7 @@ const Ask = () => {
       
       // Make API request to the correct endpoint
       const response = await apiFetch(
-        "https://complain-management-be-1079206590069.europe-west1.run.app/api/v1/complaints/generate-response",
+        buildApiUrl("/complaints/generate-response"),
         {
           method: "POST",
           headers: {

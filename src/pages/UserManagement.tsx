@@ -7,7 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { apiFetch } from "@/lib/api";
+import { apiFetch, buildApiUrl } from "@/lib/api";
+import { API_URL } from "@/config/env";
 
 interface User {
   id: number;
@@ -42,7 +43,7 @@ const UserManagement = () => {
   const fetchUsers = async () => {
     setLoading(true);
     try {
-      const response = await apiFetch("https://complain-management-be-1079206590069.europe-west1.run.app/api/v1/admin/users", { method: "GET" });
+      const response = await apiFetch(buildApiUrl("/admin/users"), { method: "GET" });
       const data = await response.json();
       if (!response.ok) throw new Error(data.message || "Failed to fetch users");
       setUsers(data.data || []);
@@ -60,7 +61,7 @@ const UserManagement = () => {
   const handleApprovalChange = async (userEmail: string, disapprove: boolean) => {
     try {
       const response = await apiFetch(
-        `https://complain-management-be-1079206590069.europe-west1.run.app/api/v1/admin/manage-approval/user?user_email=${encodeURIComponent(userEmail)}&disapprove=${disapprove}`,
+        `${buildApiUrl("/admin/manage-approval/user")}?user_email=${encodeURIComponent(userEmail)}&disapprove=${disapprove}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -105,7 +106,7 @@ const UserManagement = () => {
         password: newUser.password,
       };
       const response = await fetch(
-        "https://complain-management-be-1079206590069.europe-west1.run.app/api/v1/auth/register",
+        `${API_URL}/auth/register`,
         {
           method: "POST",
           headers: {

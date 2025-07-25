@@ -10,7 +10,8 @@ import {
   FileQuestion,
   Brain,
   UploadIcon,
-  User as UserIcon
+  User as UserIcon,
+  Code
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -115,12 +116,20 @@ const Sidebar = () => {
           />
           <hr className="py-2" />
           {user.email === "admin@admin.com" && (
-            <SidebarItem
-              icon={UserIcon}
-              label="User Management"
-              href="/user-management"
-              isActive={location.pathname === "/user-management"}
-            />
+            <>
+              <SidebarItem
+                icon={UserIcon}
+                label="User Management"
+                href="/user-management"
+                isActive={location.pathname === "/user-management"}
+              />
+              <SidebarItem
+                icon={Code}
+                label="Prompt Management"
+                href="/prompt-management"
+                isActive={location.pathname === "/prompt-management"}
+              />
+            </>
           )}
           <SidebarItem
             icon={Settings}

@@ -40,7 +40,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
-import { apiFetch } from '@/lib/api';
+import { apiFetch, buildApiUrl } from '@/lib/api';
 
 // Define policy interface based on API response
 interface Policy {
@@ -128,7 +128,7 @@ const Policies = () => {
       }
       
       const response = await apiFetch(
-        "https://complain-management-be-1079206590069.europe-west1.run.app/api/v1/complaints/policy-collection",
+        buildApiUrl("/complaints/policy-collection"),
         {
           method: "GET",
           headers: {
@@ -168,7 +168,7 @@ const Policies = () => {
       
       // Updated endpoint to match the correct API format
       const response = await apiFetch(
-        `https://complain-management-be-1079206590069.europe-west1.run.app/api/v1/complaints/policy?policy_id=${policyId}`,
+        buildApiUrl(`/complaints/policy?policy_id=${policyId}`),
         {
           method: "DELETE",
           headers: {
@@ -249,8 +249,8 @@ const Policies = () => {
         formData.append("policy_format", getFileFormat(files[0].name));
         
         // Make API request to upload policy
-        const response = await apiFetch(
-          "https://complain-management-be-1079206590069.europe-west1.run.app/api/v1/complaints/policy-create",
+              const response = await apiFetch(
+        buildApiUrl("/complaints/policy-create"),
           {
             method: "POST",
             headers: {

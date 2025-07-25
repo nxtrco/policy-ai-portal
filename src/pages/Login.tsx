@@ -12,6 +12,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { API_URL } from "@/config/env";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -32,7 +33,7 @@ const Login = () => {
 
     try {
       const response = await fetch(
-        "https://complain-management-be-1079206590069.europe-west1.run.app/api/v1/auth/login",
+        `${API_URL}/auth/login`,
         {
           method: "POST",
           headers: {

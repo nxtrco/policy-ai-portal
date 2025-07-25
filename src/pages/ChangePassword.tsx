@@ -4,7 +4,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { apiFetch } from "@/lib/api";
+import { apiFetch, buildApiUrl } from "@/lib/api";
 
 const ChangePassword = () => {
   const [newPassword, setNewPassword] = useState("");
@@ -24,7 +24,7 @@ const ChangePassword = () => {
     }
     setLoading(true);
     try {
-      const response = await apiFetch("https://complain-management-be-1079206590069.europe-west1.run.app/api/v1/auth/change-password", {
+      const response = await apiFetch(buildApiUrl("/auth/change-password"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

@@ -13,6 +13,7 @@ import Summary from "./pages/Summary";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
 import UserManagement from "./pages/UserManagement";
+import PromptManagement from "./pages/PromptManagement";
 import ChangePassword from "./pages/ChangePassword";
 
 const queryClient = new QueryClient();
@@ -71,6 +72,14 @@ const App = () => (
             element={
               <ProtectedRoute>
                 <UserManagement />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/prompt-management"
+            element={
+              <ProtectedRoute>
+                <PromptManagement />
               </ProtectedRoute>
             }
           />

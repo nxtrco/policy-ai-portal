@@ -32,7 +32,7 @@ import {
   TabsTrigger,
 } from "@/components/ui/tabs";
 
-import { apiFetch } from '@/lib/api';
+import { apiFetch, buildApiUrl } from '@/lib/api';
 
 const Summary = () => {
   const [inputMode, setInputMode] = useState<"text" | "file">("text");
@@ -85,7 +85,7 @@ const Summary = () => {
       }
 
       const response = await apiFetch(
-        "https://complain-management-be-1079206590069.europe-west1.run.app/api/v1/complaints/generate-summary",
+        buildApiUrl("/complaints/generate-summary"),
         {
           method: "POST",
           headers: {

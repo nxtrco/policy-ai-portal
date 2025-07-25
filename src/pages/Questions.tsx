@@ -22,7 +22,7 @@ import {
   HelpCircle
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { apiFetch } from '@/lib/api';
+import { apiFetch, buildApiUrl } from '@/lib/api';
 
 interface ExtractedData {
   extracted_reasons: string[];
@@ -100,7 +100,7 @@ const Questions = () => {
       
       // Make API request
       const response = await apiFetch(
-        "https://complain-management-be-1079206590069.europe-west1.run.app/api/v1/complaints/extract-questions",
+        buildApiUrl("/complaints/extract-questions"),
         {
           method: "POST",
           headers: {
