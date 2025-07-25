@@ -3,7 +3,7 @@
 
 export const ENVIRONMENT = {
   // Set to 'development' for local development, 'production' for production
-  NODE_ENV: import.meta.env.MODE || 'development',
+  NODE_ENV: import.meta.env.MODE || 'production',
   
   // API Base URLs
   DEVELOPMENT_API_URL: 'http://localhost:8000',
